@@ -8,6 +8,8 @@ mongoose.connect('mongodb+srv://UserTest1:QYPYngmwOHVrSdSq@clusterbook.hmquoux.m
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
+const Book = require('./models/book');
+
 const app = express();
 
 app.use(express.json());
@@ -20,10 +22,13 @@ app.use((req, res, next) => {
   });
 
 app.post('/api/books', (req, res, next) => {
-  console.log(req.body);
-  res.status(201).json({
-    message: 'Objet crée !'
+  delete req.body._id;
+  const book = new Book({
+    ...req.body
   });
+  book.save()
+    .then(()=> res.status(201).json({ message: 'Objet enregistré !'}))
+    .catch(error => res.status(400).json({ error }));
 });
 
 app.get('/api/books', (req, res, next) => {
