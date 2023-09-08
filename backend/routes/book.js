@@ -7,7 +7,7 @@ router.post('/', bookCtrl.createBook);
 
 router.put('/:id', bookCtrl.modifyBook);
 
-router.delete('/api/books/:id', bookCtrl.deleteBook);
+router.delete('/:id', bookCtrl.deleteBook);
   
 router.get('/:id', bookCtrl.getOneBook);
   
