@@ -1,14 +1,18 @@
 const Book = require('../models/Book');
 
 exports.createBook = (req, res, next) => {
+    const bookObject = JSON.parse(req.body.book);
+    delete bookObject._id;
+    delete bookObject._userId;
     const book = new Book({
-      ...req.body
+      ...bookObject, 
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
-    console.log(req.get('title'));
-    console.log(book);
+
     book.save()
-      .then(()=> res.status(201).json({ message: 'Objet enregistré !'}))
-      .catch(error => res.status(400).json({ error }));
+      .then(() => { res.status(201).json({ message: 'Objet enregistré !'})})
+      .catch(error => {res.status(400).json({ error })})
   };
 
 exports.modifyBook =  (req, res, next) => {
@@ -31,6 +35,6 @@ exports.getOneBook = (req,res,next) => {
 
 exports.getAllBook = (req, res, next) => {
     Book.find()
-      .then(books => res.status(200).json(books))
+      .then(book => res.status(200).json(book))
       .catch(error => res.status(400).json({ error }));
   };
