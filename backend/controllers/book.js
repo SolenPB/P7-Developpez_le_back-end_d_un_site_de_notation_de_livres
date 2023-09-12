@@ -22,10 +22,10 @@ exports.modifyBook =  (req, res, next) => {
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : {...req.body };
 
-    delete bookObject._userId;
+    delete bookObject._userId; //Suppression de l'id de l'utilisateur de la requête envoyée
     Book.findOne({_id: req.params.id})
       .then((book) => {
-        if (book.userId!= req.auth.userId){
+        if (book.userId!= req.auth.userId){//Remplacement de l'id utilisateur extrait du token
           res.status(401).json({ message: 'Non-autorisé' });
         } else {
           Book.updateOne({ _id: req.params.id}, {...bookObject, _id: req.params.id})
@@ -39,9 +39,37 @@ exports.modifyBook =  (req, res, next) => {
   };
 
 exports.ratingBook = (req, res, next) => {
-  Book.updateOne({_id: req.params.id},{rating: req.body.rating, _id: req.params.id}) 
-      .then(() => res.status(200).json({ message: 'Objet modifié !'}))
-      .catch(error => res.status(401).json({ error }));
+  Book.findOne({_id:req.params.id})
+    .then((book) =>{
+      let userHasRated = false;
+      for(let rating of book.ratings) {
+        if (rating.userId === req.auth.userId)
+        userHasRated = true;
+      }
+      if (userHasRated) {
+        res.status(401).json({message: 'Non-autorisé'})
+      } else {
+        book.ratings.push({userId: `${req.auth.userId}`, grade: req.body.rating})
+      }
+      let addedGrade = 0;
+      for(let rating of book.ratings) {
+        addedGrade = addedGrade + rating.grade;
+      }
+      book.averageRating = addedGrade / book.ratings.length;
+      Book.updateOne({_id:req.params.id}, {ratings: book.ratings, averageRating: book.averageRating})
+        .then(() => res.status(200).json( book ))
+        .catch(error => res.status(401).json({ error }));
+    })
+    .catch((error) => {
+      res.status(400).json({ error });
+    })
+  
+}
+
+exports.bestRatedBooks = (req, res, next) => {
+  Book.find().sort({_id: req.params.id}, {averageRating: -1})
+    .then(averageRating => res.status(200).json(averageRating[0,3]))
+    .catch(error => res.status(401).json({ error }));
 }
 exports.deleteBook =  (req, res, next) => {
     Book.findOne({ _id: req.params.id})
