@@ -67,10 +67,11 @@ exports.ratingBook = (req, res, next) => {
 }
 
 exports.bestRatedBooks = (req, res, next) => {
-  Book.find().sort({_id: req.params.id}, {averageRating: -1})
-    .then(averageRating => res.status(200).json(averageRating[0,3]))
+  Book.find().sort({averageRating: -1}).limit(3)
+    .then(averageRating => res.status(200).json(averageRating))
     .catch(error => res.status(401).json({ error }));
 }
+
 exports.deleteBook =  (req, res, next) => {
     Book.findOne({ _id: req.params.id})
       .then(book => {
