@@ -2,11 +2,10 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validator = require('email-validator');
-validator.validate("test@email.com")
 
 exports.signup=(req, res, next) => {
-    if(req.body.password.length < 8 ){
-      return res.status(400).json({ message: "Le mot de passe doit avoir 8 caractères minimum !"})
+    if(req.body.password.length < 8 || !validator.validate(req.body.email) ){
+      return res.status(400).json({ message: "Identifiant non conforme !"})
     }
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
