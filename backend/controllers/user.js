@@ -2,6 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validator = require('email-validator');
+require('dotenv').config();
 
 exports.signup=(req, res, next) => {
     if(req.body.password.length < 8 || !validator.validate(req.body.email) ){
@@ -35,7 +36,7 @@ exports.login = (req, res, next) => {
                                 userId: user._id,
                                 token: jwt.sign(
                                     { userId: user._id },
-                                    'RANDOM_TOKEN_SECRET',
+                                    process.env.TOKEN_KEY,
                                     { expiresIn: '4h' }
                                 )
                             });
