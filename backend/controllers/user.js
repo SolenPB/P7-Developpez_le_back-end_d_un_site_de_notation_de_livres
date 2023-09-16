@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const validator = require('email-validator');
+validator.validate("test@email.com")
 
 exports.signup=(req, res, next) => {
     if(req.body.password.length < 8 ){
