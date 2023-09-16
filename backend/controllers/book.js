@@ -25,7 +25,7 @@ exports.modifyBook =  (req, res, next) => {
     delete bookObject._userId; //Suppression de l'id de l'utilisateur de la requête envoyée
     Book.findOne({_id: req.params.id})
       .then((book) => {
-        if (book.userId!= req.auth.userId){//Remplacement de l'id utilisateur extrait du token
+        if (book.userId!= req.auth.userId){ //Remplacement de l'id utilisateur extrait du token
           res.status(401).json({ message: 'Non-autorisé' });
         } else {
           Book.updateOne({ _id: req.params.id}, {...bookObject, _id: req.params.id})
