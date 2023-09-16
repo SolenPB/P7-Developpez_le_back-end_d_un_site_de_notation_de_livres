@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.signup=(req, res, next) => {
+    if(req.body.password.length < 8 ){
+      return res.status(400).json({ message: "Le mot de passe doit avoir 8 caractères minimum !"})
+    }
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({
