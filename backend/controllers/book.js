@@ -56,6 +56,7 @@ exports.ratingBook = (req, res, next) => {
         addedGrade = addedGrade + rating.grade;
       }
       book.averageRating = addedGrade / book.ratings.length;
+      Math.round(book.averageRating);
       Book.updateOne({_id:req.params.id}, {ratings: book.ratings, averageRating: book.averageRating})
         .then(() => res.status(200).json( book ))
         .catch(error => res.status(401).json({ error }));
