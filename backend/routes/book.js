@@ -4,9 +4,13 @@ const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
 const rateLimit = require('express-rate-limit');
 
+const apiLimiter = rateLimit({
+    limit: 15,
+})
+
 const bookCtrl = require('../controllers/book');
 
-router.post('/', auth,  multer, bookCtrl.createBook);
+router.post('/', auth, multer, bookCtrl.createBook);
 
 router.post('/:id/rating', auth, bookCtrl.ratingBook);
 
