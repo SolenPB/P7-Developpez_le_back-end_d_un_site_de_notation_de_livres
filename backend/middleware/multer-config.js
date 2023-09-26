@@ -6,12 +6,17 @@ const MIME_TYPES = {
     'image/jpeg': 'jpg',
     'image/png': 'png'
   };
-  
+
 const storage = sharpMulter({
     destination: (req, file, callback) => callback(null, 'images'),
     imageOptions:{
         fileFormat: "webp",
         resize: { width: 206, height: 260 },
+        filename: (req, file, callback) => {
+            const name = file.originalname.split(' ').join('_');
+            const extension = MIME_TYPES[file.mimetype];
+            callback(null, name + Date.now() + '.' + extension);
+          }
     }
 });
 
