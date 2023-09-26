@@ -12,7 +12,6 @@ const storage = sharpMulter({
     imageOptions:{
         fileFormat: "webp",
         resize: { width: 206, height: 260 },
-        timeStamp: Date.now(),
     }
 });
 
