@@ -28,6 +28,16 @@ exports.modifyBook =  (req, res, next) => {
       .then((book) => {
         if (book.userId!= req.auth.userId){ //Remplacement de l'id utilisateur extrait du token
           res.status(401).json({ message: 'Non-autorisé' });
+        } else if(req.file){
+          Book.findOne({_id: req.params.id})
+            .then((previousImage) => {
+              const oldFilename = previousImage.imageUrl.split('/images/')[1];
+              fs.unlink(`images/${oldFilename}`, () => {
+                Book.updateOne({ _id: req.params.id}, {...bookObject, _id: req.params.id, imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`})
+                  .then(() => res.status(200).json({ message: 'Objet modifié !'}))
+                  .catch(error => res.status(401).json({ error }));
+              })
+            })
         } else {
           Book.updateOne({ _id: req.params.id}, {...bookObject, _id: req.params.id})
             .then(() => res.status(200).json({ message: 'Objet modifié !'}))
