@@ -58,17 +58,19 @@ exports.ratingBook = (req, res, next) => {
         userHasRated = true;
       }
       if (userHasRated) {
-        res.status(401).json({message: 'Non-autorisé'})
+        return res.status(401).json({message: 'Non-autorisé'})
       } else {
         book.ratings.push({userId: `${req.auth.userId}`, grade: req.body.rating})
       }
+
       let addedGrade = 0;
       for(let rating of book.ratings) {
         addedGrade = addedGrade + rating.grade;
       }
-      book.averageRating = addedGrade / book.ratings.length;
-      Math.round(book.averageRating);
-      Book.updateOne({_id:req.params.id}, {ratings: book.ratings, averageRating: book.averageRating})
+      book.averageRating = addedGrade / book.ratings.length
+      let roundedAverage = Math.round(book.averageRating);
+  
+      Book.updateOne({_id:req.params.id}, {ratings: book.ratings, averageRating: roundedAverage})
         .then(() => res.status(200).json( book ))
         .catch(error => res.status(401).json({ error }));
     })
