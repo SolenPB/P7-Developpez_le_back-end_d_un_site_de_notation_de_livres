@@ -27,7 +27,7 @@ exports.modifyBook =  (req, res, next) => {
     Book.findOne({_id: req.params.id})
       .then((book) => {
         if (book.userId!= req.auth.userId){ //Remplacement de l'id utilisateur extrait du token
-          res.status(401).json({ message: 'Non-autorisé' });
+          return res.status(401).json({ message: 'Non-autorisé' });
         } else if(req.file){
           Book.findOne({_id: req.params.id})
             .then((previousImage) => {
@@ -90,7 +90,7 @@ exports.deleteBook =  (req, res, next) => {
     Book.findOne({ _id: req.params.id})
       .then(book => {
         if (book.userId != req.auth.userId) {
-          res.status(401).json({ message: 'Non-autorisé'});
+          return res.status(401).json({ message: 'Non-autorisé'});
         } else {
           const filename = book.imageUrl.split('/images/')[1];
           fs.unlink(`images/${filename}`, () => {
